@@ -55,6 +55,9 @@ services:
       timeout: 5s
       retries: 12
     image: appflowyinc/gotrue:${GOTRUE_VERSION:-latest}
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     environment:
       # There are a lot of options to configure GoTrue. You can reference the example config:
       # https://github.com/supabase/auth/blob/master/example.env
@@ -109,6 +112,9 @@ services:
 
   appflowy_cloud:
     restart: on-failure
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     environment:
       - RUST_LOG=${RUST_LOG:-info}
       - APPFLOWY_ENVIRONMENT=production
