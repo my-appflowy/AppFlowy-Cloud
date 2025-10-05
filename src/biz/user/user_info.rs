@@ -82,5 +82,5 @@ pub async fn update_user(
   params: UpdateUserParams,
 ) -> anyhow::Result<(), AppResponseError> {
   let metadata = params.metadata.map(|m| json!(m.into_inner()));
-  Ok(database::user::update_user(pg_pool, &user_uuid, params.name, params.email, metadata).await?)
+  Ok(database::user::update_user(pg_pool, &user_uuid, params.name, params.email, params.phone, metadata).await?)
 }

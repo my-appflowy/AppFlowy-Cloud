@@ -30,6 +30,7 @@ pub struct UpdateUserParams {
   pub name: Option<String>,
   pub password: Option<String>,
   pub email: Option<String>,
+  pub phone: Option<String>,
   pub metadata: Option<UserMetaData>,
 }
 
@@ -47,6 +48,10 @@ impl UpdateUserParams {
   }
   pub fn with_email<T: ToString>(mut self, email: T) -> Self {
     self.email = Some(email.to_string());
+    self
+  }
+  pub fn with_phone<T: ToString>(mut self, phone: T) -> Self {
+    self.phone = Some(phone.to_string());
     self
   }
   pub fn with_metadata<T: Into<UserMetaData>>(mut self, metadata: T) -> Self {

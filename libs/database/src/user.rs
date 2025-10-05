@@ -12,7 +12,7 @@ use crate::pg_row::AFUserIdRow;
 
 /// Updates the user's details in the `af_user` table.
 ///
-/// This function allows for updating the user's name, email, and metadata based on the provided UUID.
+/// This function allows for updating the user's name, email, phone, and metadata based on the provided UUID.
 /// If the `metadata` is provided, it merges the new metadata with the existing one, with the new values
 /// overriding the old ones in case of conflicts.
 ///
@@ -22,6 +22,7 @@ use crate::pg_row::AFUserIdRow;
 /// * `user_uuid` - The UUID of the user to be updated.
 /// * `name` - An optional new name for the user.
 /// * `email` - An optional new email for the user.
+/// * `phone` - An optional new phone number for the user.
 /// * `metadata` - An optional JSON value containing new metadata for the user.
 ///
 #[instrument(skip_all, err)]
@@ -31,6 +32,7 @@ pub async fn update_user(
   user_uuid: &uuid::Uuid,
   name: Option<String>,
   email: Option<String>,
+  phone: Option<String>,
   metadata: Option<JsonValue>,
 ) -> Result<(), AppError> {
   let mut set_clauses = Vec::new();
@@ -51,6 +53,15 @@ pub async fn update_user(
     set_clauses.push(format!("email = ${}", args_num));
     args.add(e).map_err(|err| AppError::SqlxArgEncodingError {
       desc: format!("unable to encode email for user {}", user_uuid),
+      err,
+    })?;
+  }
+
+  if let Some(p) = phone {
+    args_num += 1;
+    set_clauses.push(format!("phone = ${}", args_num));
+    args.add(p).map_err(|err| AppError::SqlxArgEncodingError {
+      desc: format!("unable to encode phone for user {}", user_uuid),
       err,
     })?;
   }
@@ -203,6 +214,23 @@ pub async fn select_uid_from_email<'a, E: Executor<'a, Database = Postgres>>(
 }
 
 #[inline]
+pub async fn select_uid_from_phone<'a, E: Executor<'a, Database = Postgres>>(
+  executor: E,
+  phone: &str,
+) -> Result<i64, AppError> {
+  let uid = sqlx::query!(
+    r#"
+      SELECT uid FROM af_user WHERE phone = $1
+    "#,
+    phone
+  )
+  .fetch_one(executor)
+  .await?
+  .uid;
+  Ok(uid)
+}
+
+#[inline]
 pub async fn is_user_exist<'a, E: Executor<'a, Database = Postgres>>(
   executor: E,
   user_uuid: &Uuid,
@@ -250,6 +278,35 @@ pub async fn select_email_from_user_uid(pool: &PgPool, user_uid: i64) -> Result<
   .fetch_one(pool)
   .await?;
   Ok(email)
+}
+
+#[inline]
+pub async fn select_phone_from_user_uuid(
+  pool: &PgPool,
+  user_uuid: &Uuid,
+) -> Result<Option<String>, AppError> {
+  let phone = sqlx::query_scalar!(
+    r#"
+      SELECT phone FROM af_user WHERE uuid = $1
+    "#,
+    user_uuid
+  )
+  .fetch_one(pool)
+  .await?;
+  Ok(phone)
+}
+
+#[inline]
+pub async fn select_phone_from_user_uid(pool: &PgPool, user_uid: i64) -> Result<Option<String>, AppError> {
+  let phone = sqlx::query_scalar!(
+    r#"
+      SELECT phone FROM af_user WHERE uid = $1
+    "#,
+    user_uid
+  )
+  .fetch_one(pool)
+  .await?;
+  Ok(phone)
 }
 
 #[inline]

@@ -671,6 +671,7 @@ pub struct AFUserProfile {
   pub uid: i64,
   pub uuid: Uuid,
   pub email: Option<String>,
+  pub phone: Option<String>,
   pub password: Option<String>,
   pub name: Option<String>,
   pub metadata: Option<serde_json::Value>,
