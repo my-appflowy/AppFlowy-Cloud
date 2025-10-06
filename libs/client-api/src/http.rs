@@ -285,9 +285,12 @@ impl Client {
     })
   }
 
-  /// Sign in with magic link
+  /// Sign in with magic link (supports both email and phone)
   ///
-  /// User will receive an email with a magic link to sign in.
+  /// User will receive an email or SMS with a verification code to sign in.
+  /// The email_or_phone parameter can be either an email address or a phone number.
+  /// GoTrue will automatically detect the type and send the appropriate verification code.
+  ///
   /// The redirect_to parameter is optional. If provided, the user will be redirected to the specified URL after signing in.
   /// If not, the user will be redirected to the appflowy-flutter:// by default
   ///
@@ -295,18 +298,28 @@ impl Client {
   #[instrument(level = "debug", skip_all, err)]
   pub async fn sign_in_with_magic_link(
     &self,
-    email: &str,
+    email_or_phone: &str,
     redirect_to: Option<String>,
   ) -> Result<(), AppResponseError> {
+    // Detect if input is phone or email
+    // Simple detection: if it contains '@', it's an email; otherwise, it's a phone
+    let is_phone = !email_or_phone.contains('@');
+    
+    let params = if is_phone {
+      MagicLinkParams {
+        phone: email_or_phone.to_owned(),
+        ..Default::default()
+      }
+    } else {
+      MagicLinkParams {
+        email: email_or_phone.to_owned(),
+        ..Default::default()
+      }
+    };
+    
     self
       .gotrue_client
-      .magic_link(
-        &MagicLinkParams {
-          email: email.to_owned(),
-          ..Default::default()
-        },
-        redirect_to,
-      )
+      .magic_link(&params, redirect_to)
       .await?;
     Ok(())
   }
@@ -324,6 +337,7 @@ impl Client {
       .gotrue_client
       .verify(&VerifyParams {
         email: email.to_owned(),
+        phone: String::new(),
         token: passcode.to_owned(),
         type_: VerifyType::Recovery,
       })
@@ -333,24 +347,40 @@ impl Client {
     Ok(response)
   }
 
-  /// Sign in with passcode (OTP)
+  /// Sign in with passcode (OTP) - supports both email and phone
   ///
-  /// User will receive an email with a passcode to sign in.
+  /// User will receive an email or SMS with a passcode to sign in.
+  /// The email_or_phone parameter can be either an email address or a phone number.
   ///
   /// For more information, please refer to the sign_in_with_magic_link function.
   #[instrument(level = "debug", skip_all, err)]
   pub async fn sign_in_with_passcode(
     &self,
-    email: &str,
+    email_or_phone: &str,
     passcode: &str,
   ) -> Result<GotrueTokenResponse, AppResponseError> {
-    let response = self
-      .gotrue_client
-      .verify(&VerifyParams {
-        email: email.to_owned(),
+    // Detect if input is phone or email
+    let is_phone = !email_or_phone.contains('@');
+    
+    let params = if is_phone {
+      VerifyParams {
+        phone: email_or_phone.to_owned(),
         token: passcode.to_owned(),
         type_: VerifyType::MagicLink,
-      })
+        ..Default::default()
+      }
+    } else {
+      VerifyParams {
+        email: email_or_phone.to_owned(),
+        token: passcode.to_owned(),
+        type_: VerifyType::MagicLink,
+        ..Default::default()
+      }
+    };
+    
+    let response = self
+      .gotrue_client
+      .verify(&params)
       .await?;
     let _ = self.verify_token_cloud(&response.access_token).await?;
     self.token.write().set(response.clone());

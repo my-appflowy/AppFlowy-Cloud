@@ -475,7 +475,7 @@ pub struct PublishInfo {
   pub publish_name: String,
   pub view_id: Uuid,
   #[serde(default)]
-  pub publisher_email: String,
+  pub publisher_email: Option<String>,
   #[serde(default)]
   pub publish_timestamp: DateTime<Utc>,
   #[serde(default)]
@@ -683,7 +683,7 @@ pub struct AFUserProfile {
 #[derive(Serialize, Deserialize)]
 pub struct AFUserWithAvatar {
   pub uuid: Uuid,
-  pub email: String,
+  pub email: Option<String>,
   pub name: String,
   pub avatar_url: Option<String>,
 }
@@ -758,7 +758,7 @@ pub struct AFUserWorkspaceInfo {
 #[derive(Debug, Clone, Serialize, Deserialize, Hash, Eq, PartialEq)]
 pub struct AFWorkspaceMember {
   pub name: String,
-  pub email: String,
+  pub email: Option<String>,
   pub role: AFRole,
   pub avatar_url: Option<String>,
   pub joined_at: Option<DateTime<Utc>>,
@@ -1339,7 +1339,7 @@ pub struct JoinWorkspaceByInviteCodeParams {
 pub struct MentionableWorkspaceMemberOrGuest {
   pub uuid: Uuid,
   pub name: String,
-  pub email: String,
+  pub email: Option<String>,
   pub role: AFRole,
   pub avatar_url: Option<String>,
   pub cover_image_url: Option<String>,
@@ -1370,7 +1370,7 @@ impl From<MentionableWorkspaceMemberOrGuest> for MentionablePerson {
 pub struct MentionableWorkspaceMemberOrGuestWithLastMentionedTime {
   pub uuid: Uuid,
   pub name: String,
-  pub email: String,
+  pub email: Option<String>,
   pub role: AFRole,
   pub avatar_url: Option<String>,
   pub cover_image_url: Option<String>,
@@ -1415,7 +1415,7 @@ pub struct WorkspaceMemberProfile {
 pub struct MentionablePerson {
   pub uuid: Uuid,
   pub name: String,
-  pub email: String,
+  pub email: Option<String>,
   pub role: MentionablePersonType,
   pub avatar_url: Option<String>,
   pub cover_image_url: Option<String>,
@@ -1428,7 +1428,7 @@ pub struct MentionablePerson {
 pub struct MentionablePersonWithLastMentionedTime {
   pub uuid: Uuid,
   pub name: String,
-  pub email: String,
+  pub email: Option<String>,
   pub role: MentionablePersonType,
   pub avatar_url: Option<String>,
   pub cover_image_url: Option<String>,

@@ -15,7 +15,7 @@ async fn get_workspace_owner_after_sign_up_test() {
     .await
     .unwrap();
   assert_eq!(members.len(), 1);
-  assert_eq!(members[0].email, c1.email().await);
+  assert_eq!(members[0].email, Some(c1.email().await));
 }
 
 #[tokio::test]
@@ -176,7 +176,7 @@ async fn update_workspace_member_role_from_guest_to_member() {
     .await
     .unwrap();
   assert_eq!(members.len(), 1);
-  assert_eq!(members[0].email, owner.email().await);
+  assert_eq!(members[0].email, Some(owner.email().await));
   assert_eq!(members[0].role, AFRole::Owner);
 
   owner
@@ -188,9 +188,9 @@ async fn update_workspace_member_role_from_guest_to_member() {
     .get_workspace_members(&workspace_id)
     .await
     .unwrap();
-  assert_eq!(members[0].email, owner.email().await);
+  assert_eq!(members[0].email, Some(owner.email().await));
   assert_eq!(members[0].role, AFRole::Owner);
-  assert_eq!(members[1].email, guest.email().await);
+  assert_eq!(members[1].email, Some(guest.email().await));
   assert_eq!(members[1].role, AFRole::Member);
 }
 
@@ -225,13 +225,13 @@ async fn workspace_add_member() {
     .await
     .unwrap();
   assert_eq!(members.len(), 3);
-  assert_eq!(members[0].email, owner.email().await);
+  assert_eq!(members[0].email, Some(owner.email().await));
   assert_eq!(members[0].role, AFRole::Owner);
 
-  assert_eq!(members[1].email, other_owner.email().await);
+  assert_eq!(members[1].email, Some(other_owner.email().await));
   assert_eq!(members[1].role, AFRole::Owner);
 
-  assert_eq!(members[2].email, member.email().await);
+  assert_eq!(members[2].email, Some(member.email().await));
   assert_eq!(members[2].role, AFRole::Member);
 }
 
@@ -257,9 +257,9 @@ async fn add_workspace_member_and_owner_then_delete_all() {
     .get_workspace_members(&workspace_id)
     .await
     .unwrap();
-  assert_eq!(members[0].email, owner.email().await);
-  assert_eq!(members[1].email, member.email().await);
-  assert_eq!(members[2].email, second_owner.email().await);
+  assert_eq!(members[0].email, Some(owner.email().await));
+  assert_eq!(members[1].email, Some(member.email().await));
+  assert_eq!(members[2].email, Some(second_owner.email().await));
 
   // delete the members
   owner
@@ -276,7 +276,7 @@ async fn add_workspace_member_and_owner_then_delete_all() {
     .await
     .unwrap();
   assert_eq!(members.len(), 1);
-  assert_eq!(members[0].email, owner.email().await);
+  assert_eq!(members[0].email, Some(owner.email().await));
 }
 
 #[tokio::test]
@@ -293,7 +293,7 @@ async fn workspace_owner_remove_self_from_workspace() {
 
   let members = c1.get_workspace_members(&workspace_id).await;
   assert_eq!(members.len(), 1);
-  assert_eq!(members[0].email, c1.email().await);
+  assert_eq!(members[0].email, Some(c1.email().await));
 }
 
 #[tokio::test]

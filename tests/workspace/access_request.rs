@@ -74,5 +74,5 @@ async fn access_request_test() {
     .get_workspace_members(&workspace_id)
     .await
     .unwrap();
-  assert!(workspace_members.iter().any(|m| m.email == requester.email));
+  assert!(workspace_members.iter().any(|m| m.email == Some(requester.email.clone())));
 }

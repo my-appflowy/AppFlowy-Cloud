@@ -486,6 +486,7 @@ async fn test_publish_comments() {
       name: Some("PageOwner".to_string()),
       password: None,
       email: None,
+      phone: None,
       metadata: None,
     })
     .await
@@ -541,6 +542,7 @@ async fn test_publish_comments() {
       name: Some("User1".to_string()),
       password: None,
       email: None,
+      phone: None,
       metadata: None,
     })
     .await
@@ -610,6 +612,7 @@ async fn test_publish_comments() {
       name: Some("User2".to_string()),
       password: None,
       email: None,
+      phone: None,
       metadata: None,
     })
     .await

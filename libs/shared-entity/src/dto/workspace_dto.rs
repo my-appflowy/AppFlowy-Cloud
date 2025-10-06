@@ -498,7 +498,7 @@ pub struct PublishedView {
 
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct PublishedViewInfo {
-  pub publisher_email: String,
+  pub publisher_email: Option<String>,
   pub publish_name: String,
   pub publish_timestamp: DateTime<Utc>,
   pub comments_enabled: bool,

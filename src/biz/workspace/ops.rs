@@ -379,7 +379,7 @@ pub async fn invite_workspace_members(
     database::workspace::select_workspace_member_list_exclude_guest(pg_pool, workspace_id)
       .await?
       .into_iter()
-      .map(|row| (row.email, row.role))
+      .filter_map(|row| row.email.map(|email| (email, row.role)))
       .collect();
   let pending_invitations =
     database::workspace::select_workspace_pending_invitations(pg_pool, workspace_id).await?;
@@ -527,7 +527,12 @@ pub async fn leave_workspace(
   workspace_access_control: Arc<dyn WorkspaceAccessControl>,
 ) -> Result<(), AppResponseError> {
   let email = database::user::select_email_from_user_uuid(pg_pool, user_uuid).await?;
-  remove_workspace_members(pg_pool, workspace_id, &[email], workspace_access_control).await
+  if let Some(email) = email {
+    remove_workspace_members(pg_pool, workspace_id, &[email], workspace_access_control).await
+  } else {
+    // User has no email, cannot remove by email
+    Ok(())
+  }
 }
 
 pub async fn remove_workspace_members(

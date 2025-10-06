@@ -82,7 +82,7 @@ async fn create_import_handler(
       "notion": {
          "uid": uid,
          "user_name": user_name,
-         "user_email": user_email,
+         "user_email": user_email.unwrap_or_default(),
          "task_id": task_id.to_string(),
          "workspace_id": workspace_id,
          "file_size":params.content_length,
@@ -232,7 +232,7 @@ async fn import_data_handler(
       "notion": {
          "uid": uid,
          "user_name": user_name,
-         "user_email": user_email,
+         "user_email": user_email.unwrap_or_default(),
          "task_id": task_id.to_string(),
          "workspace_id": workspace_id,
          "s3_key": workspace_id,

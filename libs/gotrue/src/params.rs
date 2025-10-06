@@ -42,9 +42,17 @@ pub struct GenerateLinkParams {
 
 #[derive(Default, Deserialize, Serialize)]
 pub struct MagicLinkParams {
+  /// Email or phone number for authentication
+  /// GoTrue will automatically detect whether this is an email or phone number
+  #[serde(default, skip_serializing_if = "String::is_empty")]
   pub email: String,
+  #[serde(default, skip_serializing_if = "String::is_empty")]
+  pub phone: String,
+  #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
   pub data: BTreeMap<String, serde_json::Value>,
+  #[serde(default, skip_serializing_if = "String::is_empty")]
   pub code_challenge_method: String,
+  #[serde(default, skip_serializing_if = "String::is_empty")]
   pub code_challenge: String,
 }
 
@@ -122,18 +130,25 @@ pub struct CreateSSOProviderParams {
   pub attribute_mapping: serde_json::Value,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Default, Deserialize, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum VerifyType {
   Recovery,
+  #[default]
   MagicLink,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Default, Deserialize, Serialize)]
 pub struct VerifyParams {
   #[serde(rename = "type")]
+  #[serde(default)]
   pub type_: VerifyType,
+  /// Email or phone number for verification
+  #[serde(default)]
   pub email: String,
+  #[serde(default)]
+  pub phone: String,
+  #[serde(default)]
   pub token: String,
 }
 

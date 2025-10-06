@@ -275,7 +275,8 @@ impl Client {
     magic_link_params: &MagicLinkParams,
     redirect_to: Option<String>,
   ) -> Result<(), GoTrueError> {
-    let url = format!("{}/magiclink", self.base_url);
+    // Use /otp endpoint which supports both email and phone
+    let url = format!("{}/otp", self.base_url);
     let mut req_builder = self.client.request(Method::POST, &url);
     if let Some(redirect_to) = redirect_to {
       req_builder = req_builder.header("redirect_to", redirect_to);

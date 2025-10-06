@@ -1,22 +1,22 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n      SELECT email FROM af_user WHERE uuid = $1\n    ",
+  "query": "\n      SELECT phone FROM af_user WHERE uid = $1\n    ",
   "describe": {
     "columns": [
       {
         "ordinal": 0,
-        "name": "email",
+        "name": "phone",
         "type_info": "Text"
       }
     ],
     "parameters": {
       "Left": [
-        "Uuid"
+        "Int8"
       ]
     },
     "nullable": [
       true
     ]
   },
-  "hash": "bde2b88ffb1b59362c7ae82369892c79131c175924f95e5d48d75931fb846f41"
+  "hash": "e1184b61fabfbecd5afb1b356c881d76894f41b737543c0db300d40b10d16686"
 }

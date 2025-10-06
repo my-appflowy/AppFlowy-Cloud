@@ -53,7 +53,7 @@
     "nullable": [
       false,
       null,
-      false,
+      true,
       false,
       null,
       true,

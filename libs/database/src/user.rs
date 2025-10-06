@@ -255,7 +255,7 @@ pub async fn is_user_exist<'a, E: Executor<'a, Database = Postgres>>(
 pub async fn select_email_from_user_uuid(
   pool: &PgPool,
   user_uuid: &Uuid,
-) -> Result<String, AppError> {
+) -> Result<Option<String>, AppError> {
   let email = sqlx::query_scalar!(
     r#"
       SELECT email FROM af_user WHERE uuid = $1
@@ -268,7 +268,7 @@ pub async fn select_email_from_user_uuid(
 }
 
 #[inline]
-pub async fn select_email_from_user_uid(pool: &PgPool, user_uid: i64) -> Result<String, AppError> {
+pub async fn select_email_from_user_uid(pool: &PgPool, user_uid: i64) -> Result<Option<String>, AppError> {
   let email = sqlx::query_scalar!(
     r#"
       SELECT email FROM af_user WHERE uid = $1
@@ -325,7 +325,7 @@ pub async fn select_name_from_uuid(pool: &PgPool, user_uuid: &Uuid) -> Result<St
 pub async fn select_name_and_email_from_uuid(
   pool: &PgPool,
   user_uuid: &Uuid,
-) -> Result<(String, String), AppError> {
+) -> Result<(String, Option<String>), AppError> {
   let row = sqlx::query!(
     r#"
     SELECT name, email FROM af_user WHERE uuid = $1

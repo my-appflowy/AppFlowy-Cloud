@@ -230,7 +230,7 @@ pub struct AFWorkspaceMemberPermRow {
 pub struct AFWorkspaceMemberRow {
   pub uid: i64,
   pub name: String,
-  pub email: String,
+  pub email: Option<String>,
   pub avatar_url: Option<String>,
   pub role: AFRole,
   pub created_at: Option<DateTime<Utc>>,
@@ -820,7 +820,7 @@ impl From<AFQuickNoteRow> for QuickNote {
 pub struct AFPublishViewWithPublishInfo {
   pub view_id: Uuid,
   pub publish_name: String,
-  pub publisher_email: String,
+  pub publisher_email: Option<String>,
   pub publish_timestamp: DateTime<Utc>,
   pub comments_enabled: bool,
   pub duplicate_enabled: bool,

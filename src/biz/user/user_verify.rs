@@ -33,8 +33,16 @@ pub async fn verify_token(access_token: &str, state: &AppState) -> Result<bool, 
   if is_new {
     let new_uid = state.id_gen.write().await.next_id();
     event!(tracing::Level::INFO, "create new user:{}", new_uid);
+    
+    // Use phone number if email is empty (for phone-based authentication)
+    let email_or_phone = if user.email.is_empty() {
+      &user.phone
+    } else {
+      &user.email
+    };
+    
     let workspace_id =
-      create_user(txn.deref_mut(), new_uid, &user_uuid, &user.email, &name).await?;
+      create_user(txn.deref_mut(), new_uid, &user_uuid, email_or_phone, &name).await?;
     let workspace_row = select_workspace(txn.deref_mut(), &workspace_id).await?;
 
     // It's essential to cache the user's role because subsequent actions will rely on this cached information.
